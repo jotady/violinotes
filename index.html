@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Violín interactivo</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#1a1a1a" />
+<link rel="stylesheet" href="app.css" />
+</head>
+<body>
+<h1>Violín interactivo – primera posición</h1>
+<svg id="fingerboard" width="380" height="560" viewBox="0 0 380 560"></svg>
+<script src="app.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+          .catch(err => console.error('SW registration failed', err));
+}
+</script>
+</body>
+</html>

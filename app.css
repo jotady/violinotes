@@ -1,0 +1,19 @@
+body{
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  background:#1a1a1a;
+  color:#fff;
+  font-family:Arial, sans-serif;
+}
+h1{font-size:1.4rem;margin:1.2rem 0 0.6rem;user-select:none;}
+#fingerboard{touch-action:manipulation;}
+.string{stroke-width:3;cursor:pointer;}
+.note{stroke:#fff;stroke-width:1.5;r:22;cursor:pointer;}
+.note:hover{transform:none;}
+.label{font-size:9px;fill:#fff;text-anchor:middle;dominant-baseline:middle;pointer-events:none;user-select:none;}
+.label-e{fill:#000;}
+.open-group{cursor:pointer;}
+.open-circle{r:26;fill:#333;stroke-width:4;}
+.open-label{font-size:11px;font-weight:bold;fill:#fff;text-anchor:middle;dominant-baseline:middle;pointer-events:none;}
