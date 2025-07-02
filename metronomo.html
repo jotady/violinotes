@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Metrónomo</title>
+  
+
+</head>
+<body>
+<header class="nav-menu"><a href="index.html">⟵ Menú</a></header>
+<!-- partial:index.partial.html -->
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Metrónomo con Acento - Web Audio API</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans&display=swap" rel="stylesheet"/>
+  <style>
+/* Navegación fija */
+.nav-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+  padding: 0.8em 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+  z-index: 1000;
+}
+body {
+  padding-top: 3.5em;
+}
+.nav-menu a {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.1em;
+  color: #28a745;
+  text-decoration: none;
+}
+
+    body { font-family: 'DM Sans', sans-serif; background-color: #f4f4f9; margin: 0; padding: 0;
+      display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .container { text-align: center; background: white; padding: 2em; border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 400px; }
+    h1 { margin-bottom: 1.5em; font-size: 2rem; color: #222; }
+    .bpm-controls, .compas { margin: 1.2em 0; }
+    label { display: block; margin-bottom: .4em; font-weight:600; color:#333; }
+    input[type=range] { width: 80%; }
+    #bpmValue { display:block; font-size:1.4em; margin-top:.3em; color:#444; }
+    select { padding:.4em; font-size:1em; border-radius:5px; }
+    button { background-color:#28a745; color:white; padding:1em 2em; border:none;
+      border-radius:12px; font-size:1.1em; cursor:pointer; margin-top:2em; }
+    button:hover { background-color:#218838; }
+    .visualizer { width:30px; height:30px; background-color:#28a745; border-radius:50%;
+      margin:1em auto; opacity:.2; transition: transform .1s ease, opacity .1s ease; }
+    .pulse { transform: scale(1.4); opacity:1; }
+    footer { margin-top:2em; font-size:.9em; color:#888; }
+  </style>
+</head>
+<body>
+<header class="nav-menu"><a href="index.html">⟵ Menú</a></header>
+<div class="container">
+  <h1>🎵 Metrónomo</h1>
+  <div class="bpm-controls">
+    <label for="bpm">Velocidad (BPM):</label>
+    <input type="range" id="bpm" min="40" max="240" value="100"/>
+    <span id="bpmValue">100</span>
+  </div>
+  <div class="compas">
+    <label for="beat">Compás:</label>
+    <select id="beat">
+      <option value="2">2/4</option>
+      <option value="3">3/4</option>
+      <option value="4" selected>4/4</option>
+      <option value="6">6/8</option>
+    </select>
+  </div>
+  <div class="visualizer" id="pulseCircle"></div>
+  <button id="toggleButton">▶ Iniciar</button>
+  <footer>Hecho por @jotady</footer>
+</div>
+<script>
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  let bpm = 100, beatsPerMeasure = 4, isPlaying = false, interval, currentBeat = 0;
+  const bpmInput = document.getElementById('bpm');
+  const bpmValue = document.getElementById('bpmValue');
+  const toggleButton = document.getElementById('toggleButton');
+  const beatSelect = document.getElementById('beat');
+  const pulseCircle = document.getElementById('pulseCircle');
+
+  bpmInput.addEventListener('input', () => {
+    bpm = +bpmInput.value;
+    bpmValue.textContent = bpm;
+    if(isPlaying){ clearInterval(interval); startMetronome(); }
+  });
+  beatSelect.addEventListener('change', () => {
+    beatsPerMeasure = +beatSelect.value; currentBeat = 0;
+  });
+  toggleButton.addEventListener('click', () => {
+    if(!isPlaying){ audioCtx.resume(); startMetronome(); toggleButton.textContent='⏸ Detener'; }
+    else { clearInterval(interval); toggleButton.textContent='▶ Iniciar'; }
+    isPlaying = !isPlaying;
+  });
+
+  function playClick(isAccent){
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.frequency.value = isAccent ? 1000 : 800;
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    gain.gain.setValueAtTime(1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+  }
+
+  function startMetronome(){
+    const intervalTime = 60000 / bpm;
+    currentBeat = 0;
+    interval = setInterval(()=>{
+      currentBeat = (currentBeat % beatsPerMeasure) + 1;
+      playClick(currentBeat === 1);
+      pulseCircle.classList.add('pulse');
+      setTimeout(()=> pulseCircle.classList.remove('pulse'), 100);
+    }, intervalTime);
+  }
+</script>
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>

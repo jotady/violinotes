@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Afinador</title>
+  
+
+</head>
+<body>
+<header class="nav-menu"><a href="index.html">⟵ Menú</a></header>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang='es'>
+<head>
+  <meta charset='UTF-8'>
+  <title>Afinador de Violín</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+/* Navegación fija */
+.nav-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+  padding: 0.8em 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+  z-index: 1000;
+}
+body {
+  padding-top: 3.5em;
+}
+.nav-menu a {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.1em;
+  color: #28a745;
+  text-decoration: none;
+}
+
+    body { font-family: 'DM Sans', sans-serif; text-align: center; margin: 20px; }
+    #note { font-size: 48px; margin: 10px; }
+    #freq { font-size: 24px; }
+    #stringButtons { margin: 20px 0; display: flex; justify-content: center; gap: 15px; }
+    .string-container { display: flex; flex-direction: column; align-items: center; }
+    .string-btn { margin: 0 0 15px; padding: 10px 20px; font-size: 16px; border: 2px solid; border-radius: 4px; cursor: pointer; }
+    .string-btn[data-freq='196.00'] { background: fuchsia; border-color: fuchsia; color: white; }
+    .string-btn[data-freq='293.66'] { background: blue; border-color: blue; color: white; }
+    .string-btn[data-freq='440.00'] { background: green; border-color: green; color: white; }
+    .string-btn[data-freq='659.26'] { background: yellow; border-color: yellow; color: black; }
+    .play-btn { margin: 5px 0; padding: 10px 20px; font-size: 16px; border: 2px solid #4CAF50; border-radius: 4px; background: #fff; color: #4CAF50; cursor: pointer; }
+    .play-btn:hover { background: #4CAF50; color: #fff; }
+    #detune { height: 20px; width: 300px; background: #eee; margin: 10px auto; position: relative; border-radius: 10px; }
+    #detune > div { height: 100%; width: 4px; background: #f00; position: absolute; left: 50%; border-radius: 2px; }
+    button#startButton { margin-top: 20px; padding: 12px 24px; font-size: 18px; background-color: #4CAF50; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+  
+
+footer {
+  margin-top: 2em;
+  font-size: 0.9em;
+  color: #888;
+}
+</style>
+</head>
+<body>
+<header class="nav-menu"><a href="index.html">⟵ Menú</a></header>
+  <h1>Afinador de Violín</h1>
+  <div id='stringButtons'>
+    <div class='string-container'>
+      <button class='string-btn active' data-freq='196.00'>Sol (196 Hz)</button>
+      <button class='play-btn' data-freq='196.00'>▶️</button>
+    </div>
+    <div class='string-container'>
+      <button class='string-btn' data-freq='293.66'>Re (293.66 Hz)</button>
+      <button class='play-btn' data-freq='293.66'>▶️</button>
+    </div>
+    <div class='string-container'>
+      <button class='string-btn' data-freq='440.00'>La (440 Hz)</button>
+      <button class='play-btn' data-freq='440.00'>▶️</button>
+    </div>
+    <div class='string-container'>
+      <button class='string-btn' data-freq='659.26'>Mi (659.26 Hz)</button>
+      <button class='play-btn' data-freq='659.26'>▶️</button>
+    </div>
+  </div>
+  <div id='note'>Sol3</div>
+  <div id='freq'>-- Hz</div>
+  <div id='detune'><div></div></div>
+  <button id='startButton'>Iniciar Afinador</button>
+  <script>
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioContext = null;
+    let analyser = null;
+    let bufferLength = 0;
+    let isTuning = false;
+    let playContext = null;
+    const stringFreqs = {
+      '196.00': 'Sol3',
+      '293.66': 'Re4',
+      '440.00': 'La4',
+      '659.26': 'Mi5'
+    };
+    let targetFreqStr = document.querySelector('.string-btn.active').dataset.freq;
+    let targetFreq = parseFloat(targetFreqStr);
+    const noteElem = document.getElementById('note');
+    const freqElem = document.getElementById('freq');
+    const detuneElem = document.querySelector('#detune div');
+    const startButton = document.getElementById('startButton');
+
+    // Selección de cuerdas
+    const stringButtons = document.querySelectorAll('.string-btn');
+    stringButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        stringButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        targetFreqStr = btn.dataset.freq;
+        targetFreq = parseFloat(targetFreqStr);
+        noteElem.textContent = stringFreqs[targetFreqStr];
+      });
+    });
+
+    // Botones de reproducción
+    const playButtons = document.querySelectorAll('.play-btn');
+    playButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const freq = parseFloat(btn.dataset.freq);
+        if (!playContext) playContext = new AudioContext();
+        const osc = playContext.createOscillator();
+        const gain = playContext.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        osc.connect(gain);
+        gain.connect(playContext.destination);
+        gain.gain.setValueAtTime(1, playContext.currentTime);
+        osc.start();
+        gain.gain.exponentialRampToValueAtTime(0.001, playContext.currentTime + 3);
+        osc.stop(playContext.currentTime + 3);
+      });
+    });
+
+    // Iniciar / Detener afinador
+    startButton.addEventListener('click', () => {
+      if (!audioContext) {
+        initAudio();
+      } else if (!isTuning) {
+        audioContext.resume();
+        isTuning = true;
+        startButton.textContent = 'Detener Afinador';
+        updatePitch();
+      } else {
+        audioContext.suspend();
+        isTuning = false;
+        startButton.textContent = 'Iniciar Afinador';
+      }
+    });
+
+    function initAudio() {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+          audioContext = new AudioContext();
+          analyser = audioContext.createAnalyser();
+          analyser.fftSize = 2048;
+          bufferLength = analyser.fftSize;
+          const source = audioContext.createMediaStreamSource(stream);
+          source.connect(analyser);
+          isTuning = true;
+          startButton.textContent = 'Detener Afinador';
+          updatePitch();
+        })
+        .catch(err => { alert('Error al acceder al micrófono: ' + err); });
+    }
+
+    function updatePitch() {
+      if (!analyser) {
+        if (isTuning) requestAnimationFrame(updatePitch);
+        return;
+      }
+      const buf = new Float32Array(bufferLength);
+      analyser.getFloatTimeDomainData(buf);
+      const pitch = autoCorrelate(buf, audioContext.sampleRate);
+      if (pitch !== -1) {
+        freqElem.textContent = pitch.toFixed(2) + ' Hz';
+        const cents = 1200 * Math.log2(pitch / targetFreq);
+        detuneElem.style.left = (50 + cents / 50) + '%';
+      } else {
+        freqElem.textContent = '-- Hz';
+        detuneElem.style.left = '50%';
+      }
+      if (isTuning) requestAnimationFrame(updatePitch);
+    }
+
+    function autoCorrelate(buf, sampleRate) {
+      let SIZE = buf.length;
+      let MAX_SAMPLES = Math.floor(SIZE / 2);
+      let bestOffset = -1;
+      let bestCorrelation = 0;
+      let rms = 0;
+      for (let i = 0; i < SIZE; i++) rms += buf[i] * buf[i];
+      rms = Math.sqrt(rms / SIZE);
+      if (rms < 0.01) return -1;
+      let lastCorrelation = 1;
+      for (let offset = 0; offset < MAX_SAMPLES; offset++) {
+        let correlation = 0;
+        for (let i = 0; i < MAX_SAMPLES; i++) correlation += Math.abs(buf[i] - buf[i + offset]);
+        correlation = 1 - (correlation / MAX_SAMPLES);
+        if (correlation > 0.9 && correlation > lastCorrelation) {
+          bestCorrelation = correlation;
+          bestOffset = offset;
+        }
+        lastCorrelation = correlation;
+      }
+      return (bestCorrelation > 0.01 && bestOffset > 0) ? sampleRate / bestOffset : -1;
+    }
+  </script>
+<footer>Hecho por @jotady</footer>
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>

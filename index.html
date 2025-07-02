@@ -1,0 +1,83 @@
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kit del violín – Menú Principal</title>
+  <!-- Tipografía -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* Reset y tipografía */
+    html, body { margin:0; padding:0; }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #fff;
+      color: #000;
+      font-family: 'DM Sans', sans-serif;
+    }
+    h1 {
+      margin-bottom: 1.5rem;
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+    /* Contenedor de botones */
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-width: 280px;
+    }
+    .menu a {
+      display: block;
+      padding: 0.75rem;
+      text-align: center;
+      text-decoration: none;
+      background: #333;
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 700;
+      transition: background 0.2s ease;
+    }
+    .menu a:hover {
+      background: #555;
+    }
+    /* Pie de página */
+    footer {
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: #666;
+    }
+  </style>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+  <h1>Kit del violín</h1>
+
+  <div class="menu">
+    <a href="notas.html">Notas en el violín</a>
+    <a href="quintas.html">Círculo de quintas</a>
+    <a href="afinador.html">Afinador</a>
+    <a href="metronomo.html">Metrónomo</a>
+  </div>
+
+  <footer>Hecho por @jotady</footer>
+
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('Service Worker registered'))
+        .catch(console.error);
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap');
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fff;    /* Fondo blanco */
+  color: #000;         /* Texto negro */
+  font-family: 'DM Sans', sans-serif;
+}
+h1 {
+  margin: .5rem 0 1rem;
+  font-weight: 700;
+}
+
+/* Layout mano + diapasón */
+#layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;  /* Alinea arriba */
+  justify-content: center;
+}
+
+/* Alinear la mano al tope del mástil (rect y y=60) */
+#hand {
+  flex-shrink: 0;
+  width: 250px;
+  margin-top: 120px;
+}
+.hand-label {
+  font-size: 16px;
+  fill: #000;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+/* Diapasón y sus elementos */
+#fingerboard { touch-action: manipulation; }
+.string       { stroke-width: 3; cursor: pointer; }
+.note         {
+  stroke: #fff;         /* contorno blanco */
+  stroke-width: 1.5;
+  cursor: pointer;
+}
+.note:hover   { transform: none; }
+.label {
+  font-size: 9px;
+  fill: #fff;
+  text-anchor: middle;         /* centro horizontal */
+  dominant-baseline: central;  /* centro vertical real */
+  pointer-events: none;
+}
+
+.label-e { fill: #000; }
+
+/* Círculo de cuerda al aire */
+.open-circle {
+-  fill: #333;
+-  stroke: #fff;
+-  stroke-width: 4;
++  fill: #333;
++  stroke-width: 4;  /* el color viene ahora inline desde JS */
+}
+
+.open-label {
+  font-size: 11px;
+  font-weight: 700;
+  fill: #fff;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+/* Números de dedo en el mástil */
+.finger-num {
+  font-size: 14px;
+  fill: #000;
+  text-anchor: end;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+/* Líneas guía en blanco */
+.guide {
+  fill: #fff;
+  opacity: 1;
+}
